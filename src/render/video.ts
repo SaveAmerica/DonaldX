@@ -3,21 +3,15 @@ import { Constants } from '../constants';
 import { Experiment, experimentCheck } from '../experiments';
 import { handleQuote } from '../helpers/quote';
 import { DataProvider } from '../enum';
-
-const getGIFTranscodeDomain = (twitterId: string): string | null => {
-  const gifTranscoderList = Constants.GIF_TRANSCODE_DOMAIN_LIST;
-
-  if (gifTranscoderList.length === 0) {
-    return null;
-  }
-
-  let hash = 0;
-  for (let i = 0; i < twitterId.length; i++) {
-    const char = twitterId.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-  }
-  return gifTranscoderList[Math.abs(hash) % gifTranscoderList.length];
-};
+import {
+  APIMedia,
+  APITwitterStatus,
+  APIVideo,
+  RenderProperties,
+  ResponseInstructions
+} from '../types/types';
+import { getBranding } from '../helpers/branding';
+import { getGIFTranscodeDomain, shouldTranscodeGif } from '../helpers/giftranscode';
 
 export const renderVideo = (
   properties: RenderProperties,
@@ -57,7 +51,7 @@ export const renderVideo = (
       total: String(all.length)
     });
 
-    instructions.siteName = `${status.provider === DataProvider.Twitter ? Constants.BRANDING_NAME : Constants.BRANDING_NAME_BSKY} - ${videoCounter}`;
+    instructions.siteName = `${getBranding(properties.context).name} - ${videoCounter}`;
   }
 
   if (status.provider === 'twitter') {
@@ -74,8 +68,7 @@ export const renderVideo = (
 
   if (
     status.provider !== DataProvider.Bsky &&
-    experimentCheck(Experiment.TRANSCODE_GIFS, !!Constants.GIF_TRANSCODE_DOMAIN_LIST) &&
-    !userAgent?.includes('Telegram') &&
+    shouldTranscodeGif(properties.context) &&
     video.type === 'gif'
   ) {
     url = video.url.replace(
@@ -89,12 +82,11 @@ export const renderVideo = (
     console.log('Embedding bsky video', url);
   }
 
-  console.log('status', status);
+  // console.log('status', status);
   console.log('provider', status.provider);
 
   if (
-    // status.provider !== DataProvider.Bsky &&
-    experimentCheck(Experiment.DISCORD_VIDEO_REDIRECT_WORKAROUND, !!Constants.API_HOST_LIST) &&
+    experimentCheck(Experiment.VIDEO_REDIRECT_WORKAROUND, !!Constants.API_HOST_LIST) &&
     (userAgent?.includes('Discord') || userAgent?.includes('Telegram'))
   ) {
     url = `https://${Constants.API_HOST_LIST[0]}/2/go?url=${encodeURIComponent(url)}`;

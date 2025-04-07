@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [main, unit-tests]
+    branches: [main]
   pull_request:
-    branches: [main, unit-tests]
+    branches: [main]
 
 jobs:
   test:
@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22.14.0'
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - run: npm install

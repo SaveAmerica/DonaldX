@@ -3,6 +3,7 @@ import { Constants } from '../../constants';
 import { DataProvider } from '../../enum';
 import { handleMosaic } from '../../helpers/mosaic';
 import { linkFixerBsky } from '../../helpers/linkFixer';
+import { APIStatus, APIMedia } from '../../types/types';
 
 export const buildAPIBskyPost = async (
   c: Context,
@@ -12,7 +13,10 @@ export const buildAPIBskyPost = async (
 ): Promise<APIStatus> => {
   const apiStatus: APIStatus = {} as APIStatus;
   apiStatus.id = status.cid;
-  apiStatus.text = linkFixerBsky(status.record?.facets ?? [], status.record?.text ?? status.value?.text);
+  apiStatus.text = linkFixerBsky(
+    status.record?.facets ?? [],
+    status.record?.text ?? status.value?.text
+  );
   apiStatus.author = {
     id: status.author.handle,
     name: status.author.displayName,
@@ -75,31 +79,33 @@ export const buildAPIBskyPost = async (
     ];
   }
 
-  if (media?.external) {
-    // if (media?.external.uri.startsWith('https://media.tenor.com')) {
-    //   apiStatus.media.videos = [
-    //     {
-    //       type: 'gif',
-    //       url: media?.external?.uri,
-    //       duration: 0,
-    //       variants: [],
-    //       format: 'image/gif',
-    //       thumbnail_url: media?.thumbnail,
-    //       width: 0,
-    //       height: 0
-    //     }
-    //   ]
-    // } else {
-    apiStatus.media.photos = [
-      {
-        type: 'photo',
-        url: media?.external?.uri,
-        altText: media?.external?.description,
-        width: 0,
-        height: 0
-      }
-    ];
-    // }
+  if (media?.external || status.record?.embed?.external) {
+    const external = media?.external ?? status.record?.embed?.external;
+    if (external?.uri.startsWith('https://media.tenor.com')) {
+      console.log('tenor gif', external?.uri);
+      apiStatus.media.photos = [
+        {
+          type: 'gif',
+          url: external?.uri,
+          duration: 0,
+          variants: [],
+          format: 'image/gif',
+          thumbnail_url: external?.thumb?.ref?.$link ?? '',
+          width: 0,
+          height: 0
+        }
+      ];
+    } else {
+      apiStatus.media.photos = [
+        {
+          type: 'photo',
+          url: external?.uri ?? '',
+          altText: external?.description ?? '',
+          width: 0,
+          height: 0
+        }
+      ];
+    }
 
     apiStatus.embed_card = 'summary_large_image';
     // console.log('external image', apiStatus.media.photos);
@@ -128,7 +134,7 @@ export const buildAPIBskyPost = async (
     apiStatus.embed_card = 'player';
     const video =
       status.record?.embed?.video ?? status.value?.embed?.video ?? status?.record?.embed?.media;
-      // TODO: figure out why this is so awful
+    // TODO: figure out why this is so awful
     const cid =
       status.record?.embed?.video?.ref?.$link ??
       status.record?.embed?.media?.ref?.$link ??
@@ -138,7 +144,10 @@ export const buildAPIBskyPost = async (
       status.value?.embed?.media?.video?.ref?.$link ??
       status.embed?.video?.ref?.$link;
     const videoUrl = `https://pds-cache.fxbsky.app/${status.author.did}/${cid}`;
-    const aspectRatio = status.embed?.aspectRatio ?? status.embed?.media?.aspectRatio ?? status.embed?.record?.value?.embed?.aspectRatio;
+    const aspectRatio =
+      status.embed?.aspectRatio ??
+      status.embed?.media?.aspectRatio ??
+      status.embed?.record?.value?.embed?.aspectRatio;
     apiStatus.media.videos = [
       {
         type: 'video',
@@ -180,6 +189,8 @@ export const buildAPIBskyPost = async (
   apiStatus.provider = DataProvider.Bsky;
 
   console.log('quote', apiStatus.quote);
+
+  console.log('apiStatus', apiStatus);
 
   return apiStatus;
 };

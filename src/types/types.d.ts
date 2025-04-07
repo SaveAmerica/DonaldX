@@ -1,7 +1,10 @@
 /* This file contains types relevant to FixTweet and the FixTweet API
    For Twitter API types, see twitterTypes.d.ts */
 
-type InputFlags = {
+import { Context } from 'hono';
+import { DataProvider } from './enum';
+
+declare type InputFlags = {
   standard?: boolean;
   direct?: boolean;
   api?: boolean;
@@ -14,15 +17,16 @@ type InputFlags = {
   nativeMultiImage?: boolean;
   name?: string;
   summarize?: boolean;
+  noActivity?: boolean;
 };
 
-interface StatusResponse {
+declare interface StatusResponse {
   text?: string;
   response?: Response;
   cacheControl?: string | null;
 }
 
-interface ResponseInstructions {
+declare interface ResponseInstructions {
   addHeaders: string[];
   authorText?: string;
   siteName?: string;
@@ -30,8 +34,8 @@ interface ResponseInstructions {
   text?: string;
 }
 
-interface RenderProperties {
-  c?: Context;
+declare interface RenderProperties {
+  context: Context;
   status: APIStatus;
   thread?: SocialThread;
   siteText?: string;
@@ -44,32 +48,32 @@ interface RenderProperties {
   targetLanguage?: string;
 }
 
-interface TweetAPIResponse {
+declare interface TweetAPIResponse {
   code: number;
   message: string;
   tweet?: APITwitterStatus;
 }
 
-interface StatusAPIResponse {
+declare interface StatusAPIResponse {
   code: number;
   message: string;
   status?: APITwitterStatus;
 }
 
-interface UserAPIResponse {
+declare interface UserAPIResponse {
   code: number;
   message: string;
   user?: APIUser;
 }
 
-interface APITranslate {
+declare interface APITranslate {
   text: string;
   source_lang: string;
   source_lang_en: string;
   target_lang: string;
 }
 
-interface APIExternalMedia {
+declare interface APIExternalMedia {
   type: 'video';
   url: string;
   thumbnail_url?: string;
@@ -77,32 +81,33 @@ interface APIExternalMedia {
   width?: number;
 }
 
-interface APIPollChoice {
+declare interface APIPollChoice {
   label: string;
   count: number;
   percentage: number;
 }
 
-interface APIPoll {
+declare interface APIPoll {
   choices: APIPollChoice[];
   total_votes: number;
   ends_at: string;
   time_left_en: string;
 }
 
-interface APIMedia {
+declare interface APIMedia {
   type: string;
   url: string;
   width: number;
   height: number;
 }
 
-interface APIPhoto extends APIMedia {
-  type: 'photo';
-  altText: string;
+declare interface APIPhoto extends APIMedia {
+  type: 'photo' | 'gif';
+  transcode_url?: string;
+  altText?: string;
 }
 
-interface APIVideo extends APIMedia {
+declare interface APIVideo extends APIMedia {
   type: 'video' | 'gif';
   thumbnail_url: string;
   format: string;
@@ -110,7 +115,7 @@ interface APIVideo extends APIMedia {
   variants: TweetMediaFormat[];
 }
 
-interface APIMosaicPhoto extends APIMedia {
+declare interface APIMosaicPhoto extends APIMedia {
   type: 'mosaic_photo';
   formats: {
     webp: string;
@@ -118,7 +123,7 @@ interface APIMosaicPhoto extends APIMedia {
   };
 }
 
-interface APIStatus {
+declare interface APIStatus {
   id: string;
   url: string;
   text: string;
@@ -141,6 +146,11 @@ interface APIStatus {
     mosaic?: APIMosaicPhoto;
   };
 
+  raw_text: {
+    text: string;
+    facets: APIFacet[];
+  };
+
   lang: string | null;
   possibly_sensitive: boolean;
 
@@ -155,12 +165,21 @@ interface APIStatus {
   provider: DataProvider;
 }
 
-interface APITwitterCommunityNote {
+declare interface APIFacet {
+  type: string;
+  indices: [start: number, end: number];
+  original?: string;
+  replacement?: string;
+  display?: string;
+  id?: string;
+}
+
+declare interface APITwitterCommunityNote {
   text: string;
   entities: BirdwatchEntity[];
 }
 
-interface APITwitterStatus extends APIStatus {
+declare interface APITwitterStatus extends APIStatus {
   views?: number | null;
   translation?: APITranslate;
 
@@ -169,15 +188,14 @@ interface APITwitterStatus extends APIStatus {
   provider: DataProvider.Twitter;
 }
 
-interface APIBlueskyStatus extends APIStatus {
+declare interface APIBlueskyStatus extends APIStatus {
   provider: DataProvider.Bsky;
 }
 
-interface APIUser {
+declare interface APIUser {
   id: string;
   name: string;
   screen_name: string;
-  global_screen_name?: string;
   avatar_url: string;
   banner_url: string;
   // verified: 'legacy' | 'blue'| 'business' | 'government';
@@ -202,28 +220,107 @@ interface APIUser {
   };
 }
 
-interface SocialPost {
+declare interface SocialPost {
   status: APIStatus | APITwitterStatus | null;
   author: APIUser | null;
 }
 
-interface SocialThread {
+declare interface SocialThread {
   status: APIStatus | APITwitterStatus | null;
   thread: (APIStatus | APITwitterStatus)[] | null;
   author: APIUser | null;
   code: number;
 }
 
-interface FetchResults {
+declare interface FetchResults {
   status: number;
 }
 
-interface OEmbed {
+declare interface OEmbed {
   author_name?: string;
   author_url?: string;
   provider_name?: string;
   provider_url?: string;
   title?: string | null;
-  type: 'link';
+  type: 'link' | 'rich';
   version: '1.0';
+}
+
+// Mastodon API V1 Interfaces
+export interface ActivityStatus {
+  id: string;
+  url: string;
+  uri: string;
+  created_at: string;
+  edited_at: string | null;
+  reblog: null;
+  in_reply_to_id: string | undefined | null;
+  in_reply_to_account_id: string | undefined | null;
+  language: string | undefined | null;
+  content: string;
+  spoiler_text: string;
+  visibility: 'public';
+  application: {
+    name: string | null;
+    website: string | null;
+  };
+  media_attachments: ActivityMediaAttachment[];
+  account: ActivityAccount;
+  mentions: [];
+  tags: [];
+  emojis: [];
+  card: null;
+  poll: null;
+}
+
+export interface ActivityAccount {
+  id: string;
+  display_name: string;
+  username: string;
+  acct: string;
+  url: string;
+  uri: string;
+  created_at: string;
+  locked: boolean;
+  bot: boolean;
+  discoverable: boolean;
+  indexable: boolean;
+  group: boolean;
+  avatar: string | undefined;
+  avatar_static: string | undefined;
+  header: string | undefined;
+  header_static: string | undefined;
+  followers_count: number | undefined;
+  following_count: number | undefined;
+  statuses_count: number | undefined;
+  hide_collections: boolean;
+  noindex: boolean;
+  emojis: [];
+  roles: [];
+  fields: [];
+}
+
+export interface ActivityMediaAttachment {
+  id: string;
+  type: 'image' | 'video' | 'gifv' | 'audio' | string;
+  url: string;
+  preview_url: string | null;
+  remote_url: string | null;
+  preview_remote_url: string | null;
+  text_url: string | null;
+  description: string | null;
+  meta: {
+    original?: {
+      width: number;
+      height: number;
+      size?: string;
+      aspect?: number;
+    };
+    small?: {
+      width: number;
+      height: number;
+      size?: string;
+      aspect?: number;
+    };
+  };
 }

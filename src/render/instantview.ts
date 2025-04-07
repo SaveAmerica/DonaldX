@@ -6,6 +6,17 @@ import { sanitizeText } from '../helpers/utils';
 import { DataProvider } from '../enum';
 import { summarizeThread } from '../helpers/summarize';
 import { Context } from 'hono/dist/types/context';
+import { getBranding } from '../helpers/branding';
+import {
+  APIPhoto,
+  APIPoll,
+  APIStatus,
+  APITwitterStatus,
+  APIUser,
+  RenderProperties,
+  ResponseInstructions,
+  SocialThread
+} from '../types/types';
 
 enum AuthorActionType {
   Reply = 'Reply',
@@ -172,7 +183,7 @@ const generateInlineAuthorHeader = (
 
 const wrapForeignLinks = (url: string) => {
   let unwrap = false;
-  const whitelistedDomains = ['twitter.com', 'x.com', 't.me', 'telegram.me'];
+  const whitelistedDomains = ['twitter.com', 'x.com', 't.me', 'telegram.me', 'bsky.app'];
   try {
     const urlObj = new URL(url);
 
@@ -335,7 +346,7 @@ const generateStatus = (
             url: status.url,
             authorName: status.author.name,
             authorHandle: status.author.screen_name,
-            authorURL: `${Constants.TWITTER_ROOT}/${status.author.screen_name}`
+            authorURL: status.author.url
           }) +
           '</h4>'
         : ''
@@ -407,10 +418,7 @@ export const renderInstantView = async (properties: RenderProperties): Promise<R
     <section class="section--first">${
       flags?.archive
         ? i18next.t('ivInternetArchiveText').format({
-            brandingName:
-              status.provider === DataProvider.Twitter
-                ? Constants.BRANDING_NAME
-                : Constants.BRANDING_NAME_BSKY
+            brandingName: getBranding(properties.context).name
           })
         : i18next.t('ivFallbackText')
     } <a href="${status.url}">${i18next.t('ivViewOriginal')}</a>

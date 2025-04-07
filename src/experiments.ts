@@ -2,10 +2,11 @@ export enum Experiment {
   ELONGATOR_BY_DEFAULT = 'ELONGATOR_BY_DEFAULT',
   ELONGATOR_PROFILE_API = 'ELONGATOR_PROFILE_API',
   TWEET_DETAIL_API = 'TWEET_DETAIL_API',
-  DISCORD_NATIVE_MULTI_IMAGE = 'DISCORD_NATIVE_MULTI_IMAGE',
   TRANSCODE_GIFS = 'TRANSCODE_GIFS',
   IV_FORCE_THREAD_UNROLL = 'IV_FORCE_THREAD_UNROLL',
-  DISCORD_VIDEO_REDIRECT_WORKAROUND = 'DISCORD_VIDEO_REDIRECT_WORKAROUND'
+  VIDEO_REDIRECT_WORKAROUND = 'VIDEO_REDIRECT_WORKAROUND',
+  ACTIVITY_EMBED = 'ACTIVITY_EMBED',
+  USE_TRAFFIC_CONTROL = 'USE_TRAFFIC_CONTROL'
 }
 
 type ExperimentConfig = {
@@ -30,25 +31,30 @@ const Experiments: { [key in Experiment]: ExperimentConfig } = {
     description: 'Use Tweet Detail API (where available with elongator)',
     percentage: 1
   },
-  [Experiment.DISCORD_NATIVE_MULTI_IMAGE]: {
-    name: 'Discord native multi-image',
-    description: 'Use Discord native multi-image',
-    percentage: 1
-  },
   [Experiment.TRANSCODE_GIFS]: {
     name: 'Transcode GIFs',
     description: 'Transcode GIFs for Discord, etc.',
-    percentage: 0
+    percentage: 1
   },
   [Experiment.IV_FORCE_THREAD_UNROLL]: {
     name: 'IV force thread unroll',
     description: 'Force thread unroll for Telegram Instant View',
     percentage: 1
   },
-  [Experiment.DISCORD_VIDEO_REDIRECT_WORKAROUND]: {
+  [Experiment.VIDEO_REDIRECT_WORKAROUND]: {
     name: 'Video redirect workaround',
-    description: 'Workaround for video playback issues on Discord',
+    description: 'Workaround for video playback issues on Telegram/Discord',
     percentage: 1
+  },
+  [Experiment.ACTIVITY_EMBED]: {
+    name: 'Discord activity embed',
+    description: 'Use activity embed for Discord',
+    percentage: 1
+  },
+  [Experiment.USE_TRAFFIC_CONTROL]: {
+    name: 'Enable Traffic Control',
+    description: 'Use the Traffic Control web app to direct human traffic to app or web',
+    percentage: 0
   }
 };
 

@@ -1,7 +1,13 @@
 import i18next from 'i18next';
-import { Constants } from '../constants';
 import { Strings } from '../strings';
-import { DataProvider } from '../enum';
+import { getBranding } from '../helpers/branding';
+import {
+  RenderProperties,
+  APIPhoto,
+  APIMosaicPhoto,
+  ResponseInstructions,
+  APIMedia
+} from '../types/types';
 
 export const renderPhoto = (
   properties: RenderProperties,
@@ -11,7 +17,6 @@ export const renderPhoto = (
   const instructions: ResponseInstructions = { addHeaders: [] };
 
   if ((status.media?.photos?.length || 0) > 1 && (!status.media?.mosaic || isOverrideMedia)) {
-    photo = photo as APIPhoto;
 
     const all = status.media?.all as APIMedia[];
     const baseString =
@@ -31,10 +36,7 @@ export const renderPhoto = (
     } else {
       instructions.authorText = `${authorText}${authorText ? '   ―   ' : ''}${photoCounter}`;
     }
-    const brandingName =
-      status.provider === DataProvider.Twitter
-        ? Constants.BRANDING_NAME
-        : Constants.BRANDING_NAME_BSKY;
+    const brandingName = getBranding(properties.context).name;
     if (engagementText && !isTelegram) {
       instructions.siteName = `${brandingName} - ${engagementText} - ${photoCounter}`;
     } else {
@@ -50,6 +52,7 @@ export const renderPhoto = (
       `<meta property="og:image" content="${photo.formats.jpeg}"/>`
     ];
   } else {
+    photo = photo as APIPhoto;
     instructions.addHeaders = [
       `<meta property="twitter:image" content="${photo.url}"/>`,
       `<meta property="og:image" content="${photo.url}"/>`,
@@ -58,6 +61,12 @@ export const renderPhoto = (
       `<meta property="og:image:width" content="${photo.width}"/>`,
       `<meta property="og:image:height" content="${photo.height}"/>`
     ];
+    if (photo.altText) {
+      instructions.addHeaders.push(
+        `<meta property="twitter:image:alt" content="${photo.altText}"/>`,
+        `<meta property="og:image:alt" content="${photo.altText}"/>`
+      );
+    }
   }
 
   return instructions;

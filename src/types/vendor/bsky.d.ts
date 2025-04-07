@@ -6,7 +6,7 @@ type ATProtoLabel = {
   val: string; // value
 };
 
-type BlueskyImage = {
+declare type BlueskyImage = {
   alt: string;
   aspectRatio: {
     height: number;
@@ -16,14 +16,20 @@ type BlueskyImage = {
   thumb: string;
 };
 
-type BlueskyExternalEmbed = {
+declare type BlueskyExternalEmbed = {
   uri: string;
   title: string;
   description: string;
-  thumb: string;
+  thumb: {
+    ref: {
+      $link: string;
+    };
+    mimeType: string;
+    size: number;
+  };
 };
 
-type BlueskyVideo = {
+declare type BlueskyVideo = {
   $type: 'app.bsky.embed.video#view';
   ref: {
     $link: string;
@@ -32,7 +38,7 @@ type BlueskyVideo = {
   size: number;
 };
 
-type BlueskyMedia = {
+declare type BlueskyMedia = {
   $type: string;
   external: BlueskyExternalEmbed;
   images: BlueskyImage[];
@@ -49,10 +55,11 @@ type BlueskyMedia = {
   video?: BlueskyVideo;
 };
 
-type BlueskyEmbed = {
+declare type BlueskyEmbed = {
   images?: BlueskyImage[];
   video?: BlueskyVideo;
   media?: BlueskyMedia;
+  external?: BlueskyExternalEmbed;
   record?: {
     value: BlueskyPost;
     record: BlueskyPost;
@@ -64,7 +71,7 @@ type BlueskyEmbed = {
   playlist?: string;
   thumbnail?: string;
 };
-type BlueskyAuthor = {
+declare type BlueskyAuthor = {
   associated: {
     chat: {
       allowIncoming: 'all'; // TODO: figure out other values
@@ -78,7 +85,7 @@ type BlueskyAuthor = {
   labels: ATProtoLabel[];
 };
 
-type BlueskyReply = {
+declare type BlueskyReply = {
   parent: {
     cid: string;
     uri: string;
@@ -89,7 +96,7 @@ type BlueskyReply = {
   };
 };
 
-type BlueskyPost = {
+declare type BlueskyPost = {
   author: BlueskyAuthor;
   cid: string;
   embed: BlueskyEmbed;
@@ -103,7 +110,7 @@ type BlueskyPost = {
   embeds?: BlueskyEmbed[];
 };
 
-type BlueskyRecord = {
+declare type BlueskyRecord = {
   createdAt: string;
   embed: BlueskyEmbed;
   langs: string[];
@@ -112,26 +119,26 @@ type BlueskyRecord = {
   facets: BlueskyFacet[];
 };
 
-type BlueskyFacetFeature = {
+declare type BlueskyFacetFeature = {
   $type: string;
   uri?: string;
 };
 
-type BlueskyFacet = {
-  features: BlueskyFacetFeature[],
+declare type BlueskyFacet = {
+  features: BlueskyFacetFeature[];
   index: {
     byteStart: number;
     byteEnd: number;
-  }
-}
+  };
+};
 
-type BlueskyThread = {
+declare type BlueskyThread = {
   parent: BlueskyThread;
   post: BlueskyPost;
   replies?: BlueskyThread[];
 };
 
-type BlueskyThreadResponse = {
+declare type BlueskyThreadResponse = {
   thread: BlueskyThread;
 };
 
