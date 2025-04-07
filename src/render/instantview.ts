@@ -5,7 +5,6 @@ import { getSocialTextIV } from '../helpers/socialproof';
 import { sanitizeText } from '../helpers/utils';
 import { DataProvider } from '../enum';
 import { summarizeThread } from '../helpers/summarize';
-import { Context } from 'hono/dist/types/context';
 import { getBranding } from '../helpers/branding';
 import {
   APIPhoto,
@@ -17,6 +16,7 @@ import {
   ResponseInstructions,
   SocialThread
 } from '../types/types';
+import { Context } from 'hono';
 
 enum AuthorActionType {
   Reply = 'Reply',
@@ -381,7 +381,7 @@ const generateSummary = async(c: Context, thread?: SocialThread) => {
 
 export const renderInstantView = async (properties: RenderProperties): Promise<ResponseInstructions> => {
   console.log('Generating Instant View...');
-  const { status, thread, flags, c } = properties;
+  const { status, thread, flags, context } = properties;
   const instructions: ResponseInstructions = { addHeaders: [] };
 
   let previousThreadPieceAuthor: string | null = null;
@@ -409,7 +409,7 @@ export const renderInstantView = async (properties: RenderProperties): Promise<R
       : ``
   ];
   // Link current relative url without query strings
-  const currentUrl = new URL(c.req.url.split('?')[0]).href;
+  const currentUrl = new URL(context.req.url.split('?')[0]).href;
 
   instructions.text = `
     <section class="section-backgroundImage">
@@ -425,9 +425,9 @@ export const renderInstantView = async (properties: RenderProperties): Promise<R
     </section>
     <article>
     <sub><a href="${status.url}">${i18next.t('ivViewOriginal')}</a>
-    ${c.env.AI && !flags?.summarize ? ` • <a href="https://t.me/iv?url=${encodeURIComponent(currentUrl + '/summarize')}&rhash=17ae5d1ab26ba7">${i18next.t('ivSummarize')}</a>` : ''}
+    ${context.env.AI && !flags?.summarize ? ` • <a href="https://t.me/iv?url=${encodeURIComponent(currentUrl + '/summarize')}&rhash=17ae5d1ab26ba7">${i18next.t('ivSummarize')}</a>` : ''}
     </sub>
-    ${flags?.summarize ? await generateSummary(c, thread) : ''}
+    ${flags?.summarize ? await generateSummary(context, thread) : ''}
     <h1>${status.author.name} (@${status.author.screen_name})</h1>
 
     ${useThread

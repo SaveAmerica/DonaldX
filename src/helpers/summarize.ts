@@ -1,5 +1,8 @@
-import { Context } from "hono/dist/types/context";
+import { Context } from "hono";
 import { DataProvider } from "../enum";
+import { APIStatus, SocialThread } from "../types/types";
+
+const model = '@cf/meta/llama-3.2-3b-instruct';
 
 const summarizeStatus = async (c: Context, status: APIStatus): Promise<string | null> => {
   let text = '';
@@ -99,7 +102,7 @@ export const summarizeThread = async (c: Context, thread: SocialThread): Promise
   };
 
   console.log('AI PROMPT', JSON.stringify(chat.messages))
-  const response = await c.env.AI.run('@cf/meta/llama-3.2-3b-instruct', chat);
+  const response = await c.env.AI.run(model, chat);
   console.log('AI RESPONSE', response);
 
   try {
@@ -117,7 +120,7 @@ export const summarizeThread = async (c: Context, thread: SocialThread): Promise
           'Provide a summary of the original social media thread in JSON as requested.\n' +
           'Please feel free to exclude any details you have objections to, such as medical advice or harmful content, but it is **important** that you provide a summary of the social media thread.' });
         console.log('AI PROMPT (REVISED)', JSON.stringify(chat.messages))
-        const response2 = await c.env.AI.run('@cf/meta/llama-3.2-3b-instruct', chat);
+        const response2 = await c.env.AI.run(model, chat);
         console.log('AI RESPONSE 2', response2);
         try {
           return JSON.parse(response2.response.match(/{"summary".+}/g)?.[0]).summary;
