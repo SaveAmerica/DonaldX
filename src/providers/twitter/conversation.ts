@@ -46,8 +46,8 @@ export const fetchTweetDetail = async (
   return (await twitterFetch(
     c,
     `${
-      Constants.TWITTER_API_ROOT
-    }/graphql/miKSMGb2R1SewIJv2-ablQ/TweetDetail?variables=${encodeURIComponent(
+      Constants.TWITTER_ROOT
+    }/i/api/graphql/_8aYOgEDz35BrBcBal1-_w/TweetDetail?variables=${encodeURIComponent(
       JSON.stringify({
         focalTweetId: status,
         with_rux_injections: false,
