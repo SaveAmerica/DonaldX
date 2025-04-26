@@ -3,6 +3,8 @@ import { Constants } from './constants';
 import { Experiment, experimentCheck } from './experiments';
 import { generateUserAgent } from './helpers/useragent';
 import { generateSnowflake, withTimeout } from './helpers/utils';
+import { handleXMigration } from './helpers/transaction/utils';
+import { ClientTransaction } from './helpers/transaction/transaction';
 
 const API_ATTEMPTS = 3;
 let wasElongatorDisabled = false;
@@ -135,10 +137,25 @@ export const twitterFetch = async (
 
     try {
       if (useElongator && typeof c.env?.TwitterProxy !== 'undefined') {
+        // Fetch the X homepage and handle migration
+        const homePage = await handleXMigration(fetch);
+        
+        // Create a ClientTransaction instance
+        const ct = await ClientTransaction.create(homePage);
+
+        const requestPath = new URL(url).pathname.split('?')[0];
+
+        console.log('requestPath', requestPath);
+        
+        // Generate transaction ID
+        const transactionId = await ct.generateTransactionId('GET', requestPath);
+
+        console.log('transactionId', transactionId);
         console.log('Fetching using elongator');
         const performanceStart = performance.now();
         const headers2 = headers;
         headers2['x-twitter-auth-type'] = 'OAuth2Session';
+        headers2['x-client-transaction-id'] = transactionId;
         apiRequest = await withTimeout((signal: AbortSignal) =>
           c.env?.TwitterProxy.fetch(url, {
             method: 'GET',
@@ -165,7 +182,7 @@ export const twitterFetch = async (
     } catch (e: unknown) {
       /* We'll usually only hit this if we get an invalid response from Twitter.
          It's uncommon, but it happens */
-      console.error('Unknown error while fetching from API', e);
+      console.error('Unknown error while fetching from API', e, e.stack);
       /* Elongator returns strings to communicate downstream errors */
       if (String(e).indexOf('Status not found') !== -1) {
         console.log('Tweet was not found');

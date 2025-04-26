@@ -19,7 +19,7 @@ const Experiments: { [key in Experiment]: ExperimentConfig } = {
   [Experiment.ELONGATOR_BY_DEFAULT]: {
     name: 'Elongator by default',
     description: 'Enable Elongator by default (guest token lockout bypass)',
-    percentage: 0
+    percentage: 1
   },
   [Experiment.ELONGATOR_PROFILE_API]: {
     name: 'Elongator profile API',
@@ -29,7 +29,7 @@ const Experiments: { [key in Experiment]: ExperimentConfig } = {
   [Experiment.TWEET_DETAIL_API]: {
     name: 'Tweet detail API',
     description: 'Use Tweet Detail API (where available with elongator)',
-    percentage: 0
+    percentage: 1
   },
   [Experiment.TRANSCODE_GIFS]: {
     name: 'Transcode GIFs',

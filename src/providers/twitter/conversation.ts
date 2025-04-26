@@ -46,8 +46,8 @@ export const fetchTweetDetail = async (
   return (await twitterFetch(
     c,
     `${
-      Constants.TWITTER_ROOT
-    }/i/api/graphql/_8aYOgEDz35BrBcBal1-_w/TweetDetail?variables=${encodeURIComponent(
+      Constants.TWITTER_API_ROOT
+    }/graphql/miKSMGb2R1SewIJv2-ablQ/TweetDetail?variables=${encodeURIComponent(
       JSON.stringify({
         focalTweetId: status,
         with_rux_injections: false,
@@ -342,11 +342,11 @@ export const constructTwitterThread = async (
   console.log('env', c.env);
 
   // Try TweetDetail first under these conditions
-  const tryTweetDetailFirst =
-    typeof c.env?.TwitterProxy !== 'undefined' &&
+  const tryTweetDetailFirst = true || experimentCheck(Experiment.TWEET_DETAIL_API) &&
+    (typeof c.env?.TwitterProxy !== 'undefined' &&
     !language &&
     !useRestId &&
-    (processThread || url.hostname.includes('api'));
+    (processThread || url.hostname.includes('api')));
 
   // First attempt with preferred API
   if (tryTweetDetailFirst) {
