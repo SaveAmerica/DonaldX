@@ -8,6 +8,8 @@ import { ClientTransaction } from './helpers/transaction/transaction';
 
 const API_ATTEMPTS = 3;
 let wasElongatorDisabled = false;
+// Shared ClientTransaction promise to reuse the same transaction across requests
+let sharedClientTransaction: Promise<ClientTransaction> | null = null;
 
 export const twitterFetch = async (
   c: Context,
@@ -142,7 +144,10 @@ export const twitterFetch = async (
         // Fetch the X homepage and handle migration
         const requestPath = new URL(url).pathname.split('?')[0];
 
-        const tx = await ClientTransaction.create();
+        if (!sharedClientTransaction) {
+          sharedClientTransaction = ClientTransaction.create();
+        }
+        const tx = await sharedClientTransaction;
 
         // Generate a new transaction ID
         const transactionId = await tx.generateTransactionId('GET', requestPath);
