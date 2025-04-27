@@ -3,8 +3,8 @@ import { Constants } from './constants';
 import { Experiment, experimentCheck } from './experiments';
 import { generateUserAgent } from './helpers/useragent';
 import { generateSnowflake, withTimeout } from './helpers/utils';
-import { handleXMigration } from './helpers/transaction/utils';
 import { ClientTransaction } from './helpers/transaction/transaction';
+
 
 const API_ATTEMPTS = 3;
 let wasElongatorDisabled = false;
@@ -118,7 +118,9 @@ export const twitterFetch = async (
     /* Elongator doesn't need guestToken, so we just make up a snowflake */
     const guestToken = activateJson?.guest_token || generateSnowflake();
 
-    console.log(newTokenGenerated ? 'Activated guest:' : 'Using guest:', activateJson);
+    if (activateJson) {
+      console.log(newTokenGenerated ? 'Activated guest:' : 'Using guest:', activateJson);
+    }
 
     /* Just some cookies to mimick what the Twitter Web App would send */
     headers['Cookie'] = [
@@ -138,19 +140,16 @@ export const twitterFetch = async (
     try {
       if (useElongator && typeof c.env?.TwitterProxy !== 'undefined') {
         // Fetch the X homepage and handle migration
-        const homePage = await handleXMigration(fetch);
-        
-        // Create a ClientTransaction instance
-        const ct = await ClientTransaction.create(homePage);
-
         const requestPath = new URL(url).pathname.split('?')[0];
 
-        console.log('requestPath', requestPath);
-        
-        // Generate transaction ID
-        const transactionId = await ct.generateTransactionId('GET', requestPath);
+        const tx = await ClientTransaction.create();
 
-        console.log('transactionId', transactionId);
+        // Generate a new transaction ID
+        const transactionId = await tx.generateTransactionId('GET', requestPath);
+
+        console.log('requestPath', requestPath);
+
+        console.log('Generated transaction ID:', transactionId);
         console.log('Fetching using elongator');
         const performanceStart = performance.now();
         const headers2 = headers;

@@ -6,6 +6,7 @@ import { isGraphQLTwitterStatus } from '../../helpers/graphql';
 import { Context } from 'hono';
 import { ContentfulStatusCode } from 'hono/utils/http-status';
 import { APITwitterStatus, FetchResults, InputFlags, SocialThread } from '../../types/types';
+import { ClientTransaction } from '../../helpers/transaction/transaction';
 
 const writeDataPoint = (
   c: Context,
@@ -339,10 +340,8 @@ export const constructTwitterThread = async (
     url = new URL('https://api.fxtwitter.com/');
   }
 
-  console.log('env', c.env);
-
   // Try TweetDetail first under these conditions
-  const tryTweetDetailFirst = true || experimentCheck(Experiment.TWEET_DETAIL_API) &&
+  const tryTweetDetailFirst = experimentCheck(Experiment.TWEET_DETAIL_API) &&
     (typeof c.env?.TwitterProxy !== 'undefined' &&
     !language &&
     !useRestId &&
