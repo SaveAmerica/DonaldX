@@ -1,5 +1,4 @@
 import { load, CheerioAPI } from 'cheerio';
-// Removed Node.js crypto import; using browser Web Crypto API
 import { Cubic } from './cubic';
 import { isOdd, interpolate, convertRotationToMatrix, floatToHex } from './utils';
 
@@ -225,15 +224,12 @@ export class ClientTransaction {
 
   /**
    * Generate the X-Client-Transaction-Id header value.
-   * timeNow is optional Unix-seconds offset parameter for testing.
    */
-  async generateTransactionId(method: string, path: string, timeNow?: number): Promise<string> {
-    const now = (timeNow !== undefined)
-      ? timeNow
-      : Math.floor(Date.now()/1000 - 1682924400);
+  async generateTransactionId(method: string, path: string): Promise<string> {
+    const now = Math.floor(Date.now()/1000 - 1682924400);
     const timeBytes = [0,1,2,3].map(i => (now >> (i*8)) & 0xff);
     const hashInput = `${method}!${path}!${now}${ClientTransaction.DEFAULT_KEYWORD}${this.animationKey}`;
-    // Compute SHA-256 digest using Web Crypto API
+    
     const encoder = new TextEncoder();
     const data = encoder.encode(hashInput);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
