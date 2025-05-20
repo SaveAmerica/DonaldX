@@ -1,7 +1,7 @@
 {
   "zones": [
     {
-      "name": "FxTwitter",
+      "name": "DonaldX",
       "default": true,
       "domains": ["fxtwitter.com", "twittpr.com"],
       "provider": "twitter",
@@ -9,46 +9,46 @@
       "redirect": "https://github.com/FxEmbed/FxEmbed",
       "color": "#6363ff",
       "activityIcons": {
-        "default": "https://assets.fxembed.com/logos/fxtwitter-pride32.png",
+        "default": "https://i.imgur.com/aKqR1QL.png",
         "svg": "https://assets.fxembed.com/logos/fxtwitter.svg",
-        "16": "https://assets.fxembed.com/logos/fxtwitter-pride16.png",
-        "24": "https://assets.fxembed.com/logos/fxtwitter-pride24.png",
-        "32": "https://assets.fxembed.com/logos/fxtwitter-pride32.png",
-        "48": "https://assets.fxembed.com/logos/fxtwitter-pride48.png",
-        "64": "https://assets.fxembed.com/logos/fxtwitter-pride64.png"
+        "16": "https://i.imgur.com/TnFbnbc.png",
+        "24": "https://i.imgur.com/uOfE5Ce.png",
+        "32": "https://i.imgur.com/4OxJIAb.png",
+        "48": "https://i.imgur.com/aKqR1QL.png",
+        "64": "https://i.imgur.com/ql21hib.png"
       }
     },
     {
-      "name": "FixupX",
+      "name": "DonaldX",
       "domains": ["fixupx.com", "xfixup.com"],
       "provider": "twitter",
       "favicon": "https://abs.twimg.com/favicons/twitter.3.ico",
       "redirect": "https://github.com/FxEmbed/FxEmbed",
       "color": "#6363ff",
       "activityIcons": {
-        "default": "https://assets.fxembed.com/logos/fixupx-pride32.png",
+        "default": "https://i.imgur.com/aKqR1QL.png",
         "svg": "https://assets.fxembed.com/logos/fixupx.svg",
-        "16": "https://assets.fxembed.com/logos/fixupx-pride16.png",
-        "24": "https://assets.fxembed.com/logos/fixupx-pride24.png",
-        "32": "https://assets.fxembed.com/logos/fixupx-pride32.png",
-        "48": "https://assets.fxembed.com/logos/fixupx-pride48.png",
-        "64": "https://assets.fxembed.com/logos/fixupx-pride64.png"
+        "16": "https://i.imgur.com/TnFbnbc.png",
+        "24": "https://i.imgur.com/uOfE5Ce.png",
+        "32": "https://i.imgur.com/4OxJIAb.png",
+        "48": "https://i.imgur.com/aKqR1QL.png",
+        "64": "https://i.imgur.com/ql21hib.png"
       }
     },
     {
-      "name": "FxBluesky",
+      "name": "PedoSky",
       "domains": ["fxbsky.app"],
       "provider": "bluesky",
       "redirect": "https://bsky.app/profile/fxbsky.app",
       "color": "#6363ff",
       "activityIcons": {
-        "default": "https://assets.fxembed.com/logos/fxbluesky-pride32.png",
+        "default": "https://i.imgur.com/aKqR1QL.png",
         "svg": "https://assets.fxembed.com/logos/fxbluesky.svg",
-        "16": "https://assets.fxembed.com/logos/fxbluesky-pride16.png",
-        "24": "https://assets.fxembed.com/logos/fxbluesky-pride24.png",
-        "32": "https://assets.fxembed.com/logos/fxbluesky-pride32.png",
-        "48": "https://assets.fxembed.com/logos/fxbluesky-pride48.png",
-        "64": "https://assets.fxembed.com/logos/fxbluesky-pride64.png"
+        "16": "https://i.imgur.com/TnFbnbc.png",
+        "24": "https://i.imgur.com/uOfE5Ce.png",
+        "32": "https://i.imgur.com/4OxJIAb.png",
+        "48": "https://i.imgur.com/aKqR1QL.png",
+        "64": "https://i.imgur.com/ql21hib.png"
       }
     }
   ]
